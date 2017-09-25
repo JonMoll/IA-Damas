@@ -9,12 +9,16 @@
 
 using namespace std;
 
+#define _USE_MATH_DEFINES
+#define ficha_jugador 1
+#define ficha_ia 2
+#define dificultad 4
+
 int **tablero;
-int dificultad=3, ficha_jugador=1, ficha_ia=2;
-vector<pair<int,int>> movimientos;
 int xx1, yy1, xx2,yy2;
 bool turno=true;
 CNTree *ia;
+Jugador jugador1(ficha_jugador);
 
 //inicializando en ceros
     
@@ -28,12 +32,12 @@ void mouse(int button, int state, int x, int y);
 
 int main(int argc, char **argv)
 {
-starting();
+    starting();
   glutInit(&argc, argv);
   glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
   glutInitWindowSize(480, 480); 
   glutInitWindowPosition(0, 95);
-  glutCreateWindow("Checkers");
+  glutCreateWindow("DAMAS");
   glClearColor(0, 0, 0, 1);
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
@@ -55,7 +59,8 @@ void display(){
         glColor3f(0.0f, 0.0f, 0.0f);
       else
         glColor3f(1.0f, 1.0f, 1.0f);
-      glBegin(GL_QUADS);
+      
+        glBegin(GL_QUADS);
       glVertex2f(x * 480 / 8, y * 480 / 8);
       glVertex2f((x + 1) * 480 / 8, y * 480 / 8);
       glVertex2f((x + 1) * 480 / 8, (y + 1) * 480 / 8);
@@ -66,22 +71,18 @@ void display(){
         glColor3f(1.0f, 0.0f, 0.0f);
         glBegin(GL_POLYGON);
         for (int a = 0; a < 5; ++a){
-          float xx = 480 / 8 / 2 * cos(2 * 3.1415926 * a / 5) + (x + 0.5f) * 480 / 8;
-          float yy =  480 / 8 / 2 * sin(2 * 3.1415926 * a / 5) + (y + 0.5f) * 480 / 8;
+          float xx = 480 / 8 / 2 * cos(2 * M_PI * a / 5) + (x + 0.5f) * 480 / 8;
+          float yy =  480 / 8 / 2 * sin(2 * M_PI * a / 5) + (y + 0.5f) * 480 / 8;
           glVertex2f(xx, yy);
         }
         glEnd();
         }
       else if(tablero[y][x]==2){
-        // Pos selected = game.selectedCell();
-        // if (selected.first == x && selected.second == y)
-        //   glColor3f(1.0f, 0.0f, 0.0f);
-        // // else
           glColor3f(0.7f, 0.7f, 0.7f);
         glBegin(GL_POLYGON);
         for (int a = 0; a < 5; ++a){
-          float xx = 480 / 8 / 2 * cos(2 * 3.1415926 * a / 5) + (x + 0.5f) * 480 / 8;
-          float yy =  480 / 8 / 2 * sin(2 * 3.1415926 * a / 5) + (y + 0.5f) * 480 / 8;
+          float xx = 480 / 8 / 2 * cos(2 * M_PI * a / 5) + (x + 0.5f) * 480 / 8;
+          float yy =  480 / 8 / 2 * sin(2 * M_PI * a / 5) + (y + 0.5f) * 480 / 8;
           glVertex2f(xx, yy);
         }
         glEnd();
@@ -92,36 +93,30 @@ void display(){
 
 bool click=false;
 bool click2=false;
+
 void mouse(int button, int state, int x, int y)
 {
   if (state == GLUT_UP)
   {
-    
-    // std::vector<Move> moves;
-    // game.getListOfLegalMoves(Game::WHITE_SIDE, moves);
-    // if (moves.empty())
-    //   game = Game();
     if(click==false){
-    xx1 = int(x / (480 / 8));
-    yy1 = int(y / (480 / 8));
-    click=true;
+        xx1 = int(x / (480 / 8));
+        yy1 = int(y / (480 / 8));
+        jugador1.calcular_mov(tablero,yy1,xx1);
+        click=true;
     }
     
     else if(click==true){
-    xx2 = int(x / (480 / 8));
-    yy2 = int(y / (480 / 8));
-    click2=true;
+        xx2 = int(x / (480 / 8));
+        yy2 = int(y / (480 / 8));
+        click2=true;
     }
 
     if (click2==true){
-    click=click2=false;    
-    cout<<"x1: "<<xx1<<" y1:"<<yy1<<endl;
-    cout<<"x2: "<<xx2<<" y2:"<<yy2<<endl;
-    jugar();
+        click=click2=false;    
+        cout<<"x1: "<<xx1<<" y1:"<<yy1<<endl;
+        cout<<"x2: "<<xx2<<" y2:"<<yy2<<endl;
+        jugar();
     }
-    // if (game.selectedCell() == std::make_pair(-1, -1))
-    //   game.selectCell(xx, yy);
-    // else
     glutPostRedisplay();
   }
 }
@@ -132,34 +127,19 @@ void mouse(int button, int state, int x, int y)
 
 void jugar(){
 
-    movimientos.clear();
-    Jugador jugador1(ficha_jugador);
-
-    if(ficha_jugador == 1)
-    turno =true;
-    else
-    turno =false;
-
-    ///loop
-    // while(victoria_derrota())
+    imprimir_tablero();
+    if(turno)
     {
+        if (!victoria_derrota() or !jugador1.jugada(tablero,xx1,yy1,xx2,yy2)){
+            return;
+        }
+        turno= false;
+    }
 
-    // if(turno)
-    // {
-    //     movimientos= jugador1.calcular_mov(tablero);
-
-
-        while(!jugador1.jugada(tablero,yy1,xx1,yy2,xx2))
-            cout << "valores incorectos\n";
-    //     // while(!jugador1.jugada(tablero,xx1,yy1,xx2,yy2))
-    //     // {
-
-    //     // }
-    //     turno =false;
-
-    // }
-    // else
-    // {
+    if(!turno)
+    {
+        if(!victoria_derrota())
+            return; 
         ia = new CNTree(ia->copiar_matriz(tablero),dificultad,ficha_ia);
         ia->natalidad(ia->c_root);
         //prueba1.imprimirComportamiento(prueba1.c_root);
@@ -169,8 +149,6 @@ void jugar(){
         delete ia;
         turno =true;
     }
-
-    // }
 }
 
 
@@ -251,4 +229,6 @@ void starting(){
         tablero[7][2] = 2;
         tablero[7][4] = 2;
         tablero[7][6] = 2;
+
+        if(!turno) jugar();
 }

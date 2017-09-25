@@ -1,5 +1,6 @@
 #ifndef JUGADOR_H
 #define JUGADOR_H
+
 #include <iostream>
 
 using namespace std;
@@ -11,16 +12,9 @@ class Jugador
         Jugador(int f) {m_player = f; }
         virtual ~Jugador() {}
 
-        bool jugada(int ** &tablero_estado)
+        bool jugada(int ** &tablero_estado,int m_x,int m_y,int m_x2,int m_y2)
         {
-            int m_y,m_x,m_y2,m_x2;
-            cout << "ingrese las coordenadas de la ficha a mover: (y,x) ";
-            cin >> m_y >> m_x;
-
             if(m_y < 0 || m_y > 7|| m_x < 0 || m_x > 7) return false;
-
-            cout << "ingrese las coordenadas de movimiento de su ficha: (y x) ";
-            cin >> m_y2 >> m_x2;
 
             if(m_y2 < 0 || m_y2 > 7 || m_x2 < 0 || m_x2 > 7) return false;
 
@@ -49,7 +43,8 @@ class Jugador
                 tablero_estado[m_y][m_x] = 0;
                 tablero_estado[m_y2][m_x2] = m_player;
                 return true;
-            }
+            }
+
 
 
             return false;
@@ -57,14 +52,14 @@ class Jugador
 
 
 
-        void calcular_mov(int **tablero_estado)
+        void calcular_mov(int **tablero_estado, int m_x, int m_y)
         {
             cout << "movimientos:\n";
             bool comer_primero;
             for(int i = 0;i<8;i++)
                 for(int j=0;j<8;j++)
                 {
-                    if(tablero_estado[i][j] == m_player)
+                    if(tablero_estado[i][j] == m_player and m_x==i and m_y==j)
                     {
                         comer_primero = false;
                         if(comer_der(i,j,tablero_estado))

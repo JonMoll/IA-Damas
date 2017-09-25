@@ -21,12 +21,13 @@ CNTree *ia;
 Jugador jugador1(ficha_jugador);
 
 //inicializando en ceros
-    
+
 void starting();
 void imprimir_tablero();
 void jugar();
-void display();    
+void display();
 bool victoria_derrota();
+void copiar(int **);
 
 void mouse(int button, int state, int x, int y);
 
@@ -35,7 +36,7 @@ int main(int argc, char **argv)
     starting();
   glutInit(&argc, argv);
   glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
-  glutInitWindowSize(480, 480); 
+  glutInitWindowSize(480, 480);
   glutInitWindowPosition(0, 95);
   glutCreateWindow("DAMAS");
   glClearColor(0, 0, 0, 1);
@@ -59,7 +60,7 @@ void display(){
         glColor3f(0.0f, 0.0f, 0.0f);
       else
         glColor3f(1.0f, 1.0f, 1.0f);
-      
+
         glBegin(GL_QUADS);
       glVertex2f(x * 480 / 8, y * 480 / 8);
       glVertex2f((x + 1) * 480 / 8, y * 480 / 8);
@@ -67,12 +68,12 @@ void display(){
       glVertex2f(x * 480 / 8, (y + 1) * 480 / 8);
       glEnd();
       if(tablero[y][x]==1){
-        
+
         glColor3f(1.0f, 0.0f, 0.0f);
         glBegin(GL_POLYGON);
         for (int a = 0; a < 5; ++a){
-          float xx = 480 / 8 / 2 * cos(2 * M_PI * a / 5) + (x + 0.5f) * 480 / 8;
-          float yy =  480 / 8 / 2 * sin(2 * M_PI * a / 5) + (y + 0.5f) * 480 / 8;
+          float xx = 480 / 8 / 2 * cos(2 * 3.14 * a / 5) + (x + 0.5f) * 480 / 8;
+          float yy =  480 / 8 / 2 * sin(2 * 3.14 * a / 5) + (y + 0.5f) * 480 / 8;
           glVertex2f(xx, yy);
         }
         glEnd();
@@ -81,8 +82,8 @@ void display(){
           glColor3f(0.7f, 0.7f, 0.7f);
         glBegin(GL_POLYGON);
         for (int a = 0; a < 5; ++a){
-          float xx = 480 / 8 / 2 * cos(2 * M_PI * a / 5) + (x + 0.5f) * 480 / 8;
-          float yy =  480 / 8 / 2 * sin(2 * M_PI * a / 5) + (y + 0.5f) * 480 / 8;
+          float xx = 480 / 8 / 2 * cos(2 * 3.14 * a / 5) + (x + 0.5f) * 480 / 8;
+          float yy =  480 / 8 / 2 * sin(2 * 3.14 * a / 5) + (y + 0.5f) * 480 / 8;
           glVertex2f(xx, yy);
         }
         glEnd();
@@ -104,7 +105,7 @@ void mouse(int button, int state, int x, int y)
         jugador1.calcular_mov(tablero,yy1,xx1);
         click=true;
     }
-    
+
     else if(click==true){
         xx2 = int(x / (480 / 8));
         yy2 = int(y / (480 / 8));
@@ -112,7 +113,7 @@ void mouse(int button, int state, int x, int y)
     }
 
     if (click2==true){
-        click=click2=false;    
+        click=click2=false;
         cout<<"x1: "<<xx1<<" y1:"<<yy1<<endl;
         cout<<"x2: "<<xx2<<" y2:"<<yy2<<endl;
         jugar();
@@ -130,7 +131,7 @@ void jugar(){
     imprimir_tablero();
     if(turno)
     {
-        // if (!victoria_derrota() or !jugador1.jugada(tablero,xx1,yy1,xx2,yy2)){
+         if (!victoria_derrota() or !jugador1.jugada(tablero,xx1,yy1,xx2,yy2)){
             return;
         }
         turno= false;
@@ -143,7 +144,7 @@ void jugar(){
         //prueba1.imprimirComportamiento(prueba1.c_root);
         int neo = ia->camino(ia->c_root);
 
-        tablero = ia->c_root->c_hijos[neo]->tablero_estado;
+        copiar(ia->c_root->c_hijos[neo]->tablero_estado);
         delete ia;
         turno =true;
     }
@@ -192,11 +193,11 @@ void imprimir_tablero(){
 }
 
 void starting(){
-    
+
     tablero = new int*[8];
     for(int i=0;i<8;i++)
         tablero[i] = new int[8];
-    
+
 
     for(int i =0;i<8;i++)
         for(int j=0;j<8;j++)
@@ -229,4 +230,15 @@ void starting(){
         tablero[7][6] = 2;
 
         if(!turno) jugar();
+}
+
+void copiar(int **a_copiar)
+{
+    for(int i=0;i<8;i++)
+    {
+        for(int j =0;j<8;j++)
+        {
+            tablero[i][j] = a_copiar[i][j];
+        }
+    }
 }

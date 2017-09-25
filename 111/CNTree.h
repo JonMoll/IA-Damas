@@ -111,7 +111,7 @@ class CNode
                 delete c_hijos[i];
             }
             c_hijos.clear();
-           cout << "se elimino nodo" << var++ <<  endl;
+           //cout << "se elimino nodo" << var++ <<  endl;
         }
 
 

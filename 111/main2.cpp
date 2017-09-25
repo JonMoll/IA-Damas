@@ -130,7 +130,7 @@ void jugar(){
     imprimir_tablero();
     if(turno)
     {
-        if (!victoria_derrota() or !jugador1.jugada(tablero,xx1,yy1,xx2,yy2)){
+        // if (!victoria_derrota() or !jugador1.jugada(tablero,xx1,yy1,xx2,yy2)){
             return;
         }
         turno= false;
@@ -138,8 +138,6 @@ void jugar(){
 
     if(!turno)
     {
-        if(!victoria_derrota())
-            return; 
         ia = new CNTree(ia->copiar_matriz(tablero),dificultad,ficha_ia);
         ia->natalidad(ia->c_root);
         //prueba1.imprimirComportamiento(prueba1.c_root);

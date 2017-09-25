@@ -1,7 +1,7 @@
 #ifndef CNTREE_H
 #define CNTREE_H
 #include <vector>
-
+static int var =0;
 using namespace std;
 class CNode
 {
@@ -13,7 +13,7 @@ class CNode
         int **tablero_estado;
 
 
-        CNode(int **matrizEstado,int n,int var_m_player)
+        CNode(int ** &matrizEstado,int n,int var_m_player)
         {
             tablero_estado = matrizEstado;
             nivel = n;
@@ -47,7 +47,8 @@ class CNode
 
         bool comer_izq(int y,int x,int **&matriz_futuro)
         {
-            if(x-2 >= 0 && aux_calc2(aux_calc(y,2)) && tablero_estado[aux_calc(y,1)][x-1] !=0 && tablero_estado[aux_calc(y,1)][x-1] !=m_player )
+            if(x-2 >= 0 && aux_calc2(aux_calc(y,2)) && tablero_estado[aux_calc(y,1)][x-1] !=0
+               && tablero_estado[aux_calc(y,1)][x-1] !=m_player && tablero_estado[aux_calc(y,2)][x+2] == 0)
             {
                 matriz_futuro[y][x] = 0;
                 matriz_futuro[aux_calc(y,1)][x-1] = 0;
@@ -59,7 +60,8 @@ class CNode
 
         bool comer_der(int y, int x,int **&matriz_futuro)
         {
-            if(x+2 < 8 && aux_calc2(aux_calc(y,2)) && tablero_estado[aux_calc(y,1)][x+1] !=0 && tablero_estado[aux_calc(y,1)][x+1] !=m_player )
+            if(x+2 < 8 && aux_calc2(aux_calc(y,2)) && tablero_estado[aux_calc(y,1)][x+1] !=0
+               && tablero_estado[aux_calc(y,1)][x+1] !=m_player && tablero_estado[aux_calc(y,2)][x+2] == 0)
             {
                 matriz_futuro[y][x] = 0;
                 matriz_futuro[aux_calc(y,1)][x+1] = 0;
@@ -102,7 +104,14 @@ class CNode
 
         ~CNode()
         {
-            delete[] tablero_estado;
+            for(int i =0 ;i<8;i++)
+                delete[] tablero_estado[i];
+            for (int i = 0; i < c_hijos.size(); i++)
+            {
+                delete c_hijos[i];
+            }
+            c_hijos.clear();
+           cout << "se elimino nodo" << var++ <<  endl;
         }
 
 
@@ -147,7 +156,6 @@ class CNTree
             int **tablero_act_aux;
             bool comer_primero;
             for(int i = 0;i<8;i++)
-
                 for(int j=0;j<8;j++)
                 {
                     if(aux->tablero_estado[i][j] == aux->m_player)
@@ -166,7 +174,7 @@ class CNTree
                         {
                             n_aux = new CNode(tablero_act_aux,aux->nivel+1,aux->m_player == 1?2:1);
                             aux->c_hijos.push_back(n_aux);
-                            comer_primero = true;
+                            comer_primero = true;
                         }
 
                         tablero_act_aux=copiar_matriz(aux->tablero_estado);
@@ -277,7 +285,11 @@ class CNTree
 
 
 
-       // virtual ~CNTree();
+        virtual ~CNTree()
+        {
+            delete c_root;
+            c_root = nullptr;
+        }
 };
 
 #endif / / CNTREE_H
